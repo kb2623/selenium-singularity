@@ -1,0 +1,89 @@
+BootStrap: docker
+From: ubuntu:lunar
+
+%labels
+	Maintainer Klemen Berkovic
+	Contact roxor1992@gmail.com
+	Recipe https://github.com/kb2623/selenium-singularity
+	Tags python, selenium, webdrivers, web, testing
+	Version v0.0.1
+
+%post
+	## Install OS Shells 
+	apt update && apt install -y bash zsh
+	## Install transport app
+	apt update && apt install -y curl
+
+	## Install Python with optimizations
+	apt update && apt install -y gcc g++ make libc-dev dpkg-dev ca-certificates zlib1g-dev liblzma-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev libbz2-dev
+	export PYTHON_VERSION_MAJOR=3
+	export PYTHON_VERSION_MINOR_FIRST=11
+	export PYTHON_VERSION_MINOR_SECOND=0
+	export PYTHON_VERSION=${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST}.${PYTHON_VERSION_MINOR_SECOND}
+	curl https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz -o /opt/Python-${PYTHON_VERSION}.tgz
+	tar -xvzf /opt/Python-${PYTHON_VERSION}.tgz -C /opt
+	cd /opt/Python-${PYTHON_VERSION}
+	./configure --prefix=/usr/local --enable-optimizations --enable-ipv6 
+	make -j$(nproc) && make install
+	# Clean Python build
+	cd /opt && rm -f /opt/Python-${PYTHON_VERSION}.tgz && rm -rf /opt/Python-${PYTHON_VERSION}
+
+	## Install additional programs
+	apt update && apt install -y git tmux software-properties-common
+	# Install Neovim
+	add-apt-repository ppa:neovim-ppa/unstable
+	apt update && apt install -y neovim universal-ctags
+	# Install pip
+	/usr/local/bin/pip${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST} install --upgrade pip 
+	
+	## Install selenium
+	pip install selenium>=4.10.0
+	# Install browsers
+	apt update && apt install -y apt-transport-https software-properties-common
+	add-apt-repository ppa:mozillateam/ppa
+	echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+	apt update && apt install -y firefox
+	add-apt-repository ppa:xtradeb/apps -y
+	apt update && apt install -y chromium
+	curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+	add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
+	apt update && apt install -y microsoft-edge-dev
+	# Install webdrivers
+	apt update && apt install -y zip unzip
+	curl https://msedgedriver.azureedge.net/114.0.1823.58/edgedriver_linux64.zip -o /tmp/edge-driver.zip
+	cd /usr/local/bin && unzip /tmp/edge-driver.zip
+	curl https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -o /tmp/chromium-driver.zip
+	cd /usr/local/bin && unzip /tmp/chromium-driver.zip
+	curl https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz -o /tmp/firefox-driver.tar.gz
+	tar -xvzf /tmp/firefox-driver.tar.gz -C /usr/local/bin
+
+	## Set default programs
+	# Python
+	update-alternatives --install /usr/bin/python python /usr/local/bin/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST} 0
+	update-alternatives --config python
+	update-alternatives --install /usr/bin/python${PYTHON_VERSION_MAJOR} python${PYTHON_VERSION_MAJOR} /usr/local/bin/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST} 0
+	update-alternatives --config python${PYTHON_VERSION_MAJOR}
+	# Pip
+	update-alternatives --install /usr/bin/pip pip /usr/local/bin/pip${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST} 0
+	update-alternatives --config pip
+	update-alternatives --install /usr/bin/pip${PYTHON_VERSION_MAJOR} pip${PYTHON_VERSION_MAJOR} /usr/local/bin/pip${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST} 0
+	update-alternatives --config pip${PYTHON_VERSION_MAJOR}
+	# Neovim
+	update-alternatives --install /usr/bin/vi vi /usr/bin/nvim 0
+	update-alternatives --config vi
+	update-alternatives --install /usr/bin/vim vim /usr/bin/nvim 0
+	update-alternatives --config vim
+	update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 0
+	update-alternatives --config editor
+
+%environment
+	export SHELL=/bin/bash
+	export LC_ALL=en_US.UTF-8
+	export PATH=/usr/local/bin:$PATH
+
+%runscript
+    exec /bin/bash "$@"
+
+%help
+	This is a container that runs Python with Selenium.
+
