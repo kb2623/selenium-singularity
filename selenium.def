@@ -41,6 +41,7 @@ From: ubuntu:lunar
 	# Install browsers
 	apt update && apt install -y apt-transport-https software-properties-common
 	add-apt-repository ppa:mozillateam/ppa
+	echo 'Package: *\nPin: release o=LP-PPA-mozillateam\nPin-Priority: 1001\n' | tee /etc/apt/preferences.d/mozilla-firefox
 	echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' | tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
 	apt update && apt install -y firefox
 	add-apt-repository ppa:xtradeb/apps -y
@@ -75,6 +76,10 @@ From: ubuntu:lunar
 	update-alternatives --config vim
 	update-alternatives --install /usr/bin/editor editor /usr/bin/nvim 0
 	update-alternatives --config editor
+
+	## Clean
+	apt purge -y apt-transport-https software-properties-common
+	apt autoclean -y && apt autoremove -y
 
 %environment
 	export SHELL=/bin/bash
