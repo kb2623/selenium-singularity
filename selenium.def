@@ -5,7 +5,7 @@ From: ubuntu:lunar
 	Maintainer Klemen Berkovic
 	Contact roxor1992@gmail.com
 	Recipe https://github.com/kb2623/selenium-singularity
-	Tags python, selenium, webdrivers, web, testing
+	Tags python, selenium, webdrivers, web, testing, firefox, edge, chromium
 	Version v0.0.1
 
 %post
