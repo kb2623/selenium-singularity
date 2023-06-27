@@ -20,7 +20,7 @@ From: ubuntu:lunar
 	export PYTHON_VERSION_MINOR_FIRST=11
 	export PYTHON_VERSION_MINOR_SECOND=0
 	export PYTHON_VERSION=${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR_FIRST}.${PYTHON_VERSION_MINOR_SECOND}
-	curl https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz -o /opt/Python-${PYTHON_VERSION}.tgz
+	curl -L https://www.python.org/ftp/python/${PYTHON_VERSION}/Python-${PYTHON_VERSION}.tgz -o /opt/Python-${PYTHON_VERSION}.tgz
 	tar -xvzf /opt/Python-${PYTHON_VERSION}.tgz -C /opt
 	cd /opt/Python-${PYTHON_VERSION}
 	./configure --prefix=/usr/local --enable-optimizations --enable-ipv6 
@@ -45,16 +45,16 @@ From: ubuntu:lunar
 	apt update && apt install -y firefox
 	add-apt-repository ppa:xtradeb/apps -y
 	apt update && apt install -y chromium
-	curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+	curl -L https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
 	add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
 	apt update && apt install -y microsoft-edge-dev
 	# Install webdrivers
 	apt update && apt install -y zip unzip
-	curl https://msedgedriver.azureedge.net/114.0.1823.58/edgedriver_linux64.zip -o /tmp/edge-driver.zip
+	curl -L https://msedgedriver.azureedge.net/114.0.1823.58/edgedriver_linux64.zip -o /tmp/edge-driver.zip
 	cd /usr/local/bin && unzip /tmp/edge-driver.zip
-	curl https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -o /tmp/chromium-driver.zip
+	curl -L https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip -o /tmp/chromium-driver.zip
 	cd /usr/local/bin && unzip /tmp/chromium-driver.zip
-	curl https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz -o /tmp/firefox-driver.tar.gz
+	curl -L https://github.com/mozilla/geckodriver/releases/download/v0.33.0/geckodriver-v0.33.0-linux64.tar.gz -o /tmp/firefox-driver.tar.gz
 	tar -xvzf /tmp/firefox-driver.tar.gz -C /usr/local/bin
 
 	## Set default programs
